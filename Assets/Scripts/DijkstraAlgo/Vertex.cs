@@ -4,84 +4,36 @@ using UnityEngine;
 
 public class Vertex : IComparer<Vertex>
 {
-    private string name;
-    private float cordX, cordZ;
-    private List<Edge> edgeList;
-    private bool visited;
-    private Vertex lastVertex;
-    private float distance = float.MaxValue;
+    public string Name { get; set; }
+    public float CordX { get; set; }
+    public float CordZ { get; set; }
+    public List<Edge> EdgeList { get; set; }
+    public bool Visited { get; set; }
+    public Vertex LastVertex { get; set; }
+    public float Distance { get; set; } = float.MaxValue;
 
     public Vertex(string name, float cordX, float cordZ)
     {
-        this.name = name;
-        this.cordX = cordX;
-        this.cordZ = cordZ;
-        this.edgeList = new List<Edge>();
+        Name = name;
+        CordX = cordX;
+        CordZ = cordZ;
+        EdgeList = new List<Edge>();
     }
-    
+
     public Vertex(string name)
     {
-        this.name = name;
-    }
-
-    public void setLastVertex(Vertex lastVertex)
-    {
-        this.lastVertex = lastVertex;
-    }
-
-    public Vertex getLastVertex()
-    {
-        return lastVertex;
+        Name = name;
     }
 
     public void addEdge(Edge edge)
     {
-        this.edgeList.Add(edge);
+        EdgeList.Add(edge);
     }
 
-    public string getName()
-    {
-        return this.name;
-    }
-
-    public void setName(string name)
-    {
-        this.name = name;
-    }
-
-    public List<Edge> getEdgeList()
-    {
-        return edgeList;
-    }
-
-    public void setEdgeList(List<Edge> edgeList)
-    {
-        this.edgeList = edgeList;
-    }
-
-    public void setDistance(float distance)
-    {
-        this.distance = distance;
-    }
-
-    public float getDistance()
-    {
-        return distance;
-    }
-
-    public float getCordX()
-    {
-        return cordX;
-    }
-
-    public float getCordZ()
-    {
-        return cordZ;
-    }
 
     public int Compare(Vertex start, Vertex end)
     {
-        return start.distance.CompareTo(end.distance);
+        return start.Distance.CompareTo(end.Distance);
     }
 }
 

@@ -13,6 +13,7 @@ public class player : MonoBehaviour
     private string initCrossName;
 
     private Vector3 v;
+    private GameObject scoreBalls;
 
     private int counter = 0; //MAX 93
 
@@ -31,46 +32,44 @@ public class player : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.name.Contains("Sphere"))
+        if (other.name.Contains("scoreBalls"))
         {
-            if(other.GetComponent<food>() != null)
-            {
-                other.GetComponent<food>().MoveFoodDown();
-                counter++;
-                scoreBoard.text = counter.ToString();
-            }
+            scoreBalls = other.gameObject;
+            scoreBalls.SetActive(false);
+            counter++;
+            scoreBoard.text = counter.ToString();
         }
 
-        if (other.name.Contains("Player"))
-        {
-            Debug.Log("Loose");
-        }
+        
+        
     }
 
     private void Movment()
     {
+        float loc;
+
         if (Input.GetKey(KeyCode.LeftArrow)) // שמאל
         {
-            float loc = transform.position.x - (m_Speed * Time.deltaTime);
+            loc = transform.position.x - (m_Speed * Time.deltaTime);
             v = new Vector3(loc, 5.5f, transform.position.z);
         }
 
         if (Input.GetKey(KeyCode.RightArrow))
         {
-            float loc = transform.position.x + (m_Speed * Time.deltaTime);
+            loc = transform.position.x + (m_Speed * Time.deltaTime);
             v = new Vector3(loc, 5.5f, transform.position.z);
         }
 
         if (Input.GetKey(KeyCode.UpArrow))
         {
-            float loc = transform.localPosition.z + (m_Speed * Time.deltaTime);
+            loc = transform.localPosition.z + (m_Speed * Time.deltaTime);
             v = new Vector3(transform.position.x, 5.5f, loc);
             
         }
 
         if (Input.GetKey(KeyCode.DownArrow))
         {
-            float loc = transform.localPosition.z - (m_Speed * Time.deltaTime);
+            loc = transform.localPosition.z - (m_Speed * Time.deltaTime);
             v = new Vector3(transform.position.x, 5.5f, loc);
         }
 

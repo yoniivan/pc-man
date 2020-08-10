@@ -7,11 +7,11 @@ using UnityEngine;
 public class CordsGrid : MonoBehaviour
 {
     GameObject CrossGridArr;
-    [SerializeField] float m_MinimumDistance;
-
-    [SerializeField] GameObject Enemy;
-
-    List<GameObject> objList;
+    [SerializeField]
+    private float m_MinimumDistance;
+    [SerializeField]
+    private GameObject Enemy;
+    private List<GameObject> objList;
 
     // Start is called before the first frame update
     void Start()
@@ -40,17 +40,14 @@ public class CordsGrid : MonoBehaviour
         List<Vertex> graph = new List<Vertex>();
         objList = GenerateCrossList();
 
-        for (int i = 0; i < objList.Count; i++)
+        foreach (GameObject i in objList)
         {
-            Vertex v = generateEgesForVertex(objList[i]);
-            
+            Vertex v = generateEgesForVertex(i);
             graph.Add(v);
         }
 
         return graph;
     }
-
-    
 
     public Vertex generateEgesForVertex(GameObject g)
     {
@@ -127,7 +124,22 @@ public class CordsGrid : MonoBehaviour
                 continue;
             }
 
+            if (startWalls.Contains("RIGHT") && endWalls.Contains("LEFT") && posNeg && !direction)
+            {
+                int index = list.FindIndex(i => i.name.Equals(edge.name));
+                list.RemoveAt(index);
+                continue;
+            }
+
             if (startWalls.Contains("LEFT") && endWalls.Contains("RIGHT") && posNeg && !direction)
+            {
+                int index = list.FindIndex(i => i.name.Equals(edge.name));
+                list.RemoveAt(index);
+                continue;
+            }
+
+
+            if (startWalls.Contains("LEFT") && endWalls.Contains("RIGHT") && !posNeg && !direction)
             {
                 int index = list.FindIndex(i => i.name.Equals(edge.name));
                 list.RemoveAt(index);

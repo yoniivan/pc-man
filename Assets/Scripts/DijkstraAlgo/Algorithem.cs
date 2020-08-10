@@ -8,47 +8,43 @@ public class Algorithem
     public List<Vertex> computePaths(List<Vertex> graph, Vertex sourceVertex)
     {
         List<Vertex> list = graph;
-        List<Vertex> prioQueue = new List<Vertex>();
+        Stack<Vertex> prioQueue = new Stack<Vertex>();
         foreach (Vertex v in list)
         {
-            if (v.getName() != sourceVertex.getName())
+            if (v.Name != sourceVertex.Name)
             {
-                prioQueue.Add(v);
+                prioQueue.Push(v);
             }
         }
-        sourceVertex = graph.Find(v => v.getName().Equals(sourceVertex.getName()));
-        sourceVertex.setDistance(0);
+        sourceVertex = graph.Find(v => v.Name.Equals(sourceVertex.Name));
+        sourceVertex.Distance = 0;
 
-        prioQueue.Add(sourceVertex);
+        prioQueue.Push(sourceVertex);
 
         while (prioQueue.Count != 0)
         {
-            bubbleSort(prioQueue);
-            Vertex actualVertex = prioQueue[0];
-            string x = actualVertex.getName();
-            prioQueue.Remove(actualVertex);
+            Vertex actualVertex = prioQueue.Pop();
 
-            int len = actualVertex.getEdgeList().Count;
-            foreach (Edge edge in actualVertex.getEdgeList())
+            foreach (Edge edge in actualVertex.EdgeList)
             {
-                string vName = edge.getEndV().getName();
+                string vName = edge.EndV.Name;
                 Vertex v = null;
                 foreach(Vertex node in list)
                 {
-                    if(vName == node.getName())
+                    if(vName == node.Name)
                     {
                         v = node;
                         break;
                     }
                 }
 
-                float newDistance = actualVertex.getDistance() + edge.getWeight();
+                float newDistance = actualVertex.Distance + edge.Weight;
 
-                if (newDistance < v.getDistance())
+                if (newDistance < v.Distance)
                 {
-                    v.setDistance(newDistance);
-                    v.setLastVertex(actualVertex);
-                    prioQueue.Add(v);
+                    v.Distance = newDistance;
+                    v.LastVertex = actualVertex;
+                    prioQueue.Push(v);
                 }
             }
         }
@@ -58,10 +54,9 @@ public class Algorithem
     public List<Vertex> getShortestPath(Vertex targetVertex, List<Vertex> list)
     {
         List<Vertex> shortestPathToTarget = new List<Vertex>();
+        Vertex v = list.Find(i => i.Name.Equals(targetVertex.Name));
 
-        Vertex v = list.Find(i => i.getName().Equals(targetVertex.getName()));
-
-        for (Vertex vertex = v; vertex != null; vertex = vertex.getLastVertex())
+        for (Vertex vertex = v; vertex != null; vertex = vertex.LastVertex)
         {
             shortestPathToTarget.Add(vertex);
         }
@@ -69,26 +64,4 @@ public class Algorithem
         shortestPathToTarget.Reverse();
         return shortestPathToTarget;
     }
-
-    private void bubbleSort(List<Vertex> list) // Flag = true -> x, Flag = false -> z
-    {
-        List<Vertex> tempList = list;
-        Vertex temp;
-
-        for (int i = 0; i <= tempList.Count - 2; i++)
-        {
-            for (int j = 0; j <= tempList.Count - 2; j++)
-            {
-                {
-                    if (tempList[j].getDistance() > tempList[j + 1].getDistance())
-                    {
-                        temp = tempList[j + 1];
-                        tempList[j + 1] = tempList[j];
-                        tempList[j] = temp;
-                    }
-                }
-            }
-        }
-    }
-
 }

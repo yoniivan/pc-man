@@ -9,11 +9,11 @@ public class Enemy : MonoBehaviour
     public GameObject m_Player;
     private player scriptPlayer;
 
-    [SerializeField] CordsGrid m_Grid;
+    [SerializeField] private CordsGrid m_Grid;
 
-    List<Vertex> graph;
+    private List<Vertex> graph;
 
-    [SerializeField] float m_Speed = 1;
+    [SerializeField] private float m_Speed = 1;
     private Rigidbody rb;
     private Rigidbody playerRigit;
 
@@ -38,7 +38,7 @@ public class Enemy : MonoBehaviour
 
     void Start()
     {
-        Vertex tmp = graph.Find(v => v.getName().Equals("crossTags (1)"));
+        Vertex tmp = graph.Find(v => v.Name.Equals("crossTags (1)")); // Testing
         rb = GetComponent<Rigidbody>();
     }
 
@@ -47,9 +47,7 @@ public class Enemy : MonoBehaviour
         if (!isPathOne)
         {
             if (!moveToCrossWidth())
-            {
                 moveToNextPoint();
-            }
         }
         else
         {
@@ -67,33 +65,32 @@ public class Enemy : MonoBehaviour
     private Vertex findLastPoint()
     {
         CrossPrevList crossPrevList = queueOfNodes[queueOfNodes.Count - 1];
-        Vertex node = graph.Find(i => i.getName().Equals(crossPrevList.Name));
-        List<Edge> edgeList = node.getEdgeList();
+        Vertex node = graph.Find(i => i.Name.Equals(crossPrevList.Name));
+        List<Edge> edgeList = node.EdgeList;
         Vertex nextPoint = null;
 
         foreach (Edge edge in edgeList)
         {
-            var start = edge.getStartV();
-            var target = edge.getEndV();
+            var start = edge.StartV;
+            var target = edge.EndV;
 
-            bool direction = (start.getCordX() - target.getCordX()) == 0 ? false : true; // false -> z, true -> x
-
+            bool direction = (start.CordX - target.CordX) == 0 ? false : true; // false -> z, true -> x
             var player = GameObject.Find("Player").transform.position;
 
             if (direction)
             {
-                if (Math.Round(maxMin(start, target, true)[0].getCordX(), 1)  < Math.Round(player.x, 1) &&
-                    Math.Round(maxMin(start, target, true)[1].getCordX(), 1) > Math.Round(player.x, 1))
+                if (Math.Round(maxMin(start, target, true)[0].CordX, 1)  < Math.Round(player.x, 1) &&
+                    Math.Round(maxMin(start, target, true)[1].CordX, 1) > Math.Round(player.x, 1))
                 {
-                    nextPoint = graph.Find(i => i.getName().Equals(target.getName()));
+                    nextPoint = graph.Find(i => i.Name.Equals(target.Name));
                 }
             }
             else
             {
-                if (Math.Round(maxMin(start, target, false)[0].getCordZ(), 1) < Math.Round(player.z, 1) &&
-                    Math.Round(maxMin(start, target, false)[1].getCordZ(), 1) > Math.Round(player.z, 1))
+                if (Math.Round(maxMin(start, target, false)[0].CordZ, 1) < Math.Round(player.z, 1) &&
+                    Math.Round(maxMin(start, target, false)[1].CordZ, 1) > Math.Round(player.z, 1))
                 {
-                    nextPoint = graph.Find(i => i.getName().Equals(target.getName()));
+                    nextPoint = graph.Find(i => i.Name.Equals(target.Name));
                 }
             }
         }
@@ -106,14 +103,14 @@ public class Enemy : MonoBehaviour
         list.Add(a);
         list.Add(b);
 
-        return !direction ? list.OrderBy(i => i.getCordZ()).ToList() : list.OrderBy(i => i.getCordX()).ToList();
+        return !direction ? list.OrderBy(i => i.CordZ).ToList() : list.OrderBy(i => i.CordX).ToList();
     }
 
     public Vertex[] maxMinZ(Vertex a, Vertex b)
     {
         Vertex[] list = new Vertex[2];
 
-        if(a.getCordZ() > b.getCordZ())
+        if(a.CordZ > b.CordZ)
         {
             list[0] = a;
             list[1] = b;
@@ -127,37 +124,29 @@ public class Enemy : MonoBehaviour
         return list;
     }
 
-  
-
     private Vertex getEnemyCloseCross()
     {
-
         var gObj = GameObject.Find("Player");
         if (gObj)
         {
             Vector3 player = gObj.transform.position;
-            var distanceList = graph.OrderBy(node => Vector2.Distance(new Vector2(player.x, player.z), new Vector2(node.getCordX(), node.getCordZ()))).Take(4);
+            var distanceList = graph.OrderBy(node => Vector2.Distance(new Vector2(player.x, player.z), new Vector2(node.CordX, node.CordZ))).Take(4);
 
             List<Vertex> temp = new List<Vertex>();
 
             foreach(var node in distanceList)
             {
-                string name = node.getName();
+                string name = node.Name;
                 var nodeObj = GameObject.Find(name);
                 string[] tag = nodeObj.tag.Split('_');
 
-                if((player.z - node.getCordZ()) > 0.5f && tag.Contains("UP"))
-                {
+                if((player.z - node.CordZ) > 0.5f && tag.Contains("UP"))
                     continue;
-                }
-                if((player.z - node.getCordZ()) < 0f && tag.Contains("DOWN"))
-                {
+                if((player.z - node.CordZ) < 0f && tag.Contains("DOWN"))
                     continue;
-                }
 
                 temp.Add(node);
             }
-
 
             return temp.First();
         }
@@ -170,24 +159,19 @@ public class Enemy : MonoBehaviour
             return false;
 
         groupByList = new List<string>();
-        groupByList.Add(path[0].getName());
-        groupByList.Add(path[1].getName());
+        groupByList.Add(path[0].Name);
+        groupByList.Add(path[1].Name);
         groupByList.Add(queueOfNodes[queueOfNodes.Count - 1].Name);
         groupByList.Add(queueOfNodes[queueOfNodes.Count - 2].Name);
 
         var str = groupByList.GroupBy(x => x).Select(x => new { Text = x.Key, Cnt = x.Count() });
-
         CrossPrevList currentNode;
         CrossPrevList prevNode;
 
         if(str.Count() == 2)
-        {
             flag = true;
-        }
         else
-        {
             flag = false;
-        }
 
         if (flag)
         {
@@ -201,7 +185,7 @@ public class Enemy : MonoBehaviour
             prevNode = queueOfNodes[queueOfNodes.Count - 2];
         }
 
-        if (path[0].getCordX() == prevNode.X) // height
+        if (path[0].CordX == prevNode.X) // height
         {
             if (currentNode.Z > prevNode.Z) // up
             {
@@ -262,36 +246,24 @@ public class Enemy : MonoBehaviour
         {
             // calc z or x.
             List<Vertex> t =  path;
-            bool direction = (path[0].getCordZ() - path[1].getCordZ()) == 0 ? true : false; // X cord -> true, Z cord -> false.
+            bool direction = (path[0].CordZ - path[1].CordZ) == 0 ? true : false; // X cord -> true, Z cord -> false.
             bool leftRight; // + true / left, - false / right
 
 
             if (direction)
-            {
-                leftRight = path[1].getCordX() > path[0].getCordX() ? true : false;
-            }
+                leftRight = path[1].CordX > path[0].CordX ? true : false;
             else
-            {
-                leftRight = path[1].getCordZ() > path[0].getCordZ() ? true : false;
-            }
+                leftRight = path[1].CordZ > path[0].CordZ ? true : false;
+
 
             if (direction && leftRight)
-            {
                 v = moveEnemy(1, 0, false);
-            }
             else if (direction && !leftRight)
-            {
                 v = moveEnemy(1, 0, true);
-            }
             else if (!direction && leftRight)
-            {
                 v = moveEnemy(0, 1, false);
-            }
             else if (!direction && !leftRight)
-            {
                 v = moveEnemy(0, 1, true);
-            }
-
         }
     }
 
@@ -303,28 +275,17 @@ public class Enemy : MonoBehaviour
         if (x == 0 && z != 0)
         {
             if (direction)
-            {
-                // -
                 zCord = m_Speed * Time.deltaTime * (-1);
-            }
             else
-            {
                 zCord = m_Speed * Time.deltaTime;
-            }
         }
         if (x != 0 && z == 0)
         {
             if (direction)
-            {
                 xCord = m_Speed * Time.deltaTime * (-1);
-            }
             else
-            {
                 xCord = m_Speed * Time.deltaTime;
-            }
         }
-
-        //Debug.Log(xCord + ", " + zCord);
 
         return new Vector3(transform.position.x + xCord, transform.localPosition.y, transform.position.z + zCord);
     }
@@ -333,7 +294,6 @@ public class Enemy : MonoBehaviour
     {
         if (other.name.Contains("crossTags"))
         {
-
             bool isValid = CrossPrevList.checkValidCross(queueOfNodes, other.name);
 
             if (!isValid)
@@ -341,28 +301,19 @@ public class Enemy : MonoBehaviour
                 CrossPrevList cross = new CrossPrevList(other.transform.position.x, other.transform.position.z, other.name);
                 queueOfNodes.Add(cross);
 
-                Vertex player = new Vertex(getEnemyCloseCross().getName());
+                Vertex player = new Vertex(getEnemyCloseCross().Name);
                 Vertex enemy = new Vertex(other.name);
                 path = dijkstraPath(enemy, player);
 
                 if (path.Count == 1)
-                {
                     isPathOne = true;
-                }
                 else
-                {
                     isPathOne = false;
-                }
             }
-
-            
 
             if (firstCross)
-            {
                 nextPosition = new Vector3(other.transform.position.x, other.transform.position.y, other.transform.position.z);
-            }
         }
-
     }
 
 
@@ -373,35 +324,35 @@ public class Enemy : MonoBehaviour
         List<Vertex> list = dijksta.computePaths(temp, enemyV);
         return dijksta.getShortestPath(playerV, list);
     }
-
 }
+
 
 public class CrossPrevList
 {
-    private float x;
-    private float z;
-    private string name;
+    public float X { get; set; }
+    public float Z { get; set; }
+    public string Name { get; set; }
 
     public CrossPrevList(float x, float z, string name)
     {
-        this.X = x;
-        this.Z = z;
-        this.Name = name;
+        X = x;
+        Z = z;
+        Name = name;
     }
 
+    // TODO Change to SET !!!
     public static bool checkValidCross(List<CrossPrevList> list, string name)
     {
         if (list.Count == 0)
             return false;
-        if(list[list.Count - 1].name.Equals(name))
-        {
+        if(list[list.Count - 1].Name.Equals(name))
             return true;
-        }
 
         return false;
     }
 
-    public float X { get => x; set => x = value; }
-    public float Z { get => z; set => z = value; }
-    public string Name { get => name; set => name = value; }
+    // TODO remove first X items from list, for memory optimizations.
+    public void removeItems(List<CrossPrevList> list, int x) { }
+
+
 }
